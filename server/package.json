@@ -1,0 +1,28 @@
+{
+  "name": "gomoku",
+  "version": "1.0.0",
+  "description": "A p2p gomoku game using node.js & websocket",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KonaeAkira/gomoku.git"
+  },
+  "keywords": [
+    "gomoku",
+    "p2p",
+    "node.js",
+    "websocket"
+  ],
+  "author": "KonaeAkira <konae.akira@gmail.com>",
+  "license": "AGPL-3.0",
+  "bugs": {
+    "url": "https://github.com/KonaeAkira/gomoku/issues"
+  },
+  "homepage": "https://github.com/KonaeAkira/gomoku#readme",
+  "dependencies": {
+    "ws": "^6.0.0"
+  }
+}
