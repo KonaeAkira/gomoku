@@ -18,8 +18,12 @@ class Game {
 				this.board[i].push(0);
 			}
 		}
-		this.state = "TURN_BLACK";
+		this.state = "WAIT";
 		this.moves = 0;
+	}
+	// Start the game
+	start() {
+		this.state = "TURN_BLACK";
 	}
 	// Check if game is ongoing
 	ongoing() {
@@ -127,6 +131,14 @@ wss.on('connection', function connection(ws, req) {
 	const interval = setInterval(function ping() {
 		if (ws.isAlive == false) {
 			console.log('[Server] ' + ip + ' disconnected (' + (--online) + ' connections active)');
+			wss.broadcast('DIS ' + ws.role);
+			if (game.ongoing()) {
+				if (ws.role == 'Black') {
+					wss.broadcast('END White');
+				} else {
+					wss.broadcast('END Black');
+				}
+			}
 			clearInterval(interval);
 			ws.terminate();
 		}
@@ -134,26 +146,29 @@ wss.on('connection', function connection(ws, req) {
 		ws.ping(function(){});
 	}, 1000);
 	
-	var role = "Spectator";
-	if (blackConnected == false) {
-		blackConnected = true;
-		role = "Black";
-	} else if (whiteConnected == false) {
-		whiteConnected = true;
-		role = "White";
-	}
-	console.log('[Server] ' + ip + ' has been assigned ' + role);
-	ws.send('ASN ' + role);
-	
 	for (var i = 0; i < wss.saved.length; ++i) {
 		ws.send(wss.saved[i]);
 	}
 	
+	if (blackConnected == false) {
+		blackConnected = true;
+		ws.role = 'Black';
+	} else if (whiteConnected == false) {
+		whiteConnected = true;
+		ws.role = 'White';
+		game.start();
+	} else {
+		ws.role = 'Spectator';
+	}
+	console.log('[Server] ' + ip + ' has been assigned ' + ws.role);
+	ws.send('ASN ' + ws.role);
+	wss.broadcast('CON ' + ws.role);
+	
 	ws.on('message', function incoming(message) {
-		console.log('[' + role + '] ' + message);
+		console.log('[' + ws.role + '] ' + message);
 		message = message.split(' ');
 		if (message[0] == 'MOV') {
-			if (message.length == 3 && game.turn() == role) {
+			if (message.length == 3 && game.turn() == ws.role) {
 				var x = Number(message[1]);
 				var y = Number(message[2]);
 				if (game.valid(x, y)) {
@@ -174,11 +189,11 @@ wss.on('connection', function connection(ws, req) {
 			} else {
 				ws.send('ERR BAD_REQUEST');
 			}
-		} else if (message[0] == 'NME' && role != "Spectator") {
+		} else if (message[0] == 'NME' && ws.role != "Spectator") {
 			if (message[1].length > 16) {
 				message[1] = message[1].toString().substr(0, 16);
 			}
-			wss.broadcast('NME ' + role + ' ' + message[1]);
+			wss.broadcast('NME ' + ws.role + ' ' + message[1]);
 		} else {
 			ws.send('ERR BAD_REQUEST');
 		}

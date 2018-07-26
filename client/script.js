@@ -53,6 +53,12 @@ $(document).ready(function() {
 				} else {
 					alert(message[1] + ' wins!');
 				}
+			} else if (message[0] == 'DIS') {
+				if (message[1] == 'Spectator') {
+				
+				} else {
+					$('#name' + message[1]).html('<i>Disconnected</i>');
+				}
 			}
 		}
 		

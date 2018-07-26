@@ -14,6 +14,14 @@ info {
 	font-weight: 400;
 }
 
+td {
+	padding:0; margin:0;
+}
+
+table {
+	border-collapse: collapse;
+}
+
 .container {
 	display: table;
 	height: 100%;
@@ -43,9 +51,17 @@ info {
 	background-color: #31363b;
 }
 
+.board:hover {
+	cursor: pointer;
+}
+
 .boardCell {
 	width: 36px;
 	height: 36px;
+}
+
+.boardCellBlank {
+	opacity: 0.3;
 }
 
 .boardCellBlack {
@@ -94,9 +110,9 @@ info {
 
 .overlay {
 	position: fixed;
-	margin-top: -602px;
-	width: 602px;
-	height: 602px;
+	margin-top: -540px;
+	width: 540px;
+	height: 540px;
 }
 
 .overlay-text {
