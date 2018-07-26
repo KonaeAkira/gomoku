@@ -157,6 +157,7 @@ wss.on('connection', function connection(ws, req) {
 		whiteConnected = true;
 		ws.role = 'White';
 		game.start();
+		wss.broadcast('BEG');
 	} else {
 		ws.role = 'Spectator';
 	}

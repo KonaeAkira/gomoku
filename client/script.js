@@ -1,7 +1,10 @@
 $(document).ready(function() {
 	
-	var turn = 'Black';
+	var turn = 'Waiting';
 	var role = 'Spectator';
+	
+	var nameBlack = '';
+	var nameWhite = '';
 	
 	var string = '';
 	for (var i = 0; i < 15; ++i) {
@@ -25,6 +28,22 @@ $(document).ready(function() {
 			}
 		}, 500);
 		
+		function updateTitle() {
+			if (turn == 'Waiting') {
+				document.title = 'Gomoku - Waiting for players';
+			} else if (turn == 'Over') {
+				document.title = 'Gomoku - Game over';
+			} else if (turn == role) {
+				document.title = 'Gomoku - Your turn';
+			} else if (role == 'Spectator') {
+				document.title = 'Gomoku - ' + turn + '\'s turn';
+			} else {
+				document.title = 'Gomoku - Opponent\'s turn';
+			}
+		}
+		
+		updateTitle();
+		
 		function placeMove(x, y) {
 			$('#' + x + '-' + y).parent().html('<div id="' + x + '-' + y + '" class="boardCell boardCell' + turn + '"></div>');
 			if (turn == 'Black') {
@@ -32,6 +51,7 @@ $(document).ready(function() {
 			} else {
 				turn = 'Black';
 			}
+			updateTitle();
 		}
 		
 		ws.onmessage = function(message) {
@@ -47,18 +67,28 @@ $(document).ready(function() {
 				} else {
 					$('#name' + message[1]).html(message[2]);
 				}
+				if (message[1] == 'Black') {
+					nameBlack = message[2];
+				} else if (message[1] == 'White') {
+					nameWhite = message[2];
+				}
 			} else if (message[0] == 'END') {
 				if (message[1] == 'Tie') {
 					alert('Tie!');
 				} else {
 					alert(message[1] + ' wins!');
 				}
+				turn = 'Over';
+				updateTitle();
 			} else if (message[0] == 'DIS') {
 				if (message[1] == 'Spectator') {
 				
 				} else {
 					$('#name' + message[1]).html('<i>Disconnected</i>');
 				}
+			} else if (message[0] == 'BEG') {
+				turn = 'Black';
+				updateTitle();
 			}
 		}
 		
